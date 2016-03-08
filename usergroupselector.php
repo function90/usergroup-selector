@@ -19,12 +19,29 @@ class plgUserUsergroupselector extends JPlugin
 		if($isnew && $success){
 			$input = JFactory::getApplication()->input;
 			$requestData  = $input->post->get('jform', array(), 'array');
-			if(isset($requestData['usergroupselector']) && in_array($requestData['usergroupselector'], $allowed_groups)){				
-				$juser = JFactory::getUser($user['id']);
-				$juser->groups = array($requestData['usergroupselector']);
+			if(isset($requestData['usergroupselector'])){
+				$usergroups = array();
+				if($this->params->get('allowMultiple', false)){
+					foreach($requestData['usergroupselector'] as $usergroup){
+						if(in_array($usergroup, $allowed_groups)){				
+							$usergroups[] = $usergroup;
+						}
+					}
+				}
+				else{
+					if(in_array($requestData['usergroupselector'], $allowed_groups)){				
+						$usergroups[] = $requestData['usergroupselector'];	
+					}
+				}
+
+				if(!empty($usergroups)){
+					$juser = JFactory::getUser($user['id']);
+					$juser->groups = $usergroups;
+					$juser->save();
+				}
+
 				unset($requestData['usergroupselector']);
 				$input->set('jform', $requestData, 'array');
-				$juser->save();
 			}
 		}
 	}
@@ -59,6 +76,10 @@ class plgUserUsergroupselector extends JPlugin
 			$xml .= ' default="'.$default.'"';
 		}
 		
+		if($this->params->get('allowMultiple', false) != false){
+			$xml .= ' multiple="true"';
+		}
+
 		$xml .= ">";
 		
 		foreach($groups as $groupid => $group){
