@@ -61,12 +61,19 @@ class plgUserUsergroupselector extends JPlugin
 		$allowed_groups = $this->params->get('allowed_groups');
 		
 		$xml = "<fieldset name='usergroupselector'>
-					<field 
-						type='list'
+					<field 						
 						name='usergroupselector'
 						label='".$this->params->get('label')."'
 						description='".$this->params->get('desc')."'";
 		
+		if($this->params->get('allowMultiple', false) != false){
+			$xml .= ' type="checkboxes"';
+			$xml .= ' multiple="true"';
+		}
+		else{
+			$xml .= ' type="list"';
+		}
+
 		if($this->params->get('required', false)){
 			$xml .= ' required="true"';
 		}
@@ -74,10 +81,6 @@ class plgUserUsergroupselector extends JPlugin
 		$default = $this->params->get('default_group', false);
 		if($default != false){
 			$xml .= ' default="'.$default.'"';
-		}
-		
-		if($this->params->get('allowMultiple', false) != false){
-			$xml .= ' multiple="true"';
 		}
 
 		$xml .= ">";
