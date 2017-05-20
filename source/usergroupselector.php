@@ -95,7 +95,7 @@ class plgUserUsergroupselector extends JPlugin
 				</fieldset>
 				";
 		
-		$form->setField(new SimpleXMLElement($xml), 'usergroupselector');
+		$form->setField(new SimpleXMLElement($xml), null, true, 'usergroupselector');
 	}
 	
 	function xmlEscape($string) 
