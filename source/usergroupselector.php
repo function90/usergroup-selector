@@ -35,13 +35,12 @@ class plgUserUsergroupselector extends JPlugin
 				}
 
 				if(!empty($usergroups)){
-					$juser = JFactory::getUser($user['id']);
-					$juser->groups = $usergroups;
-					$juser->save();
+					foreach($usergroups as $groupid){
+					    $groups[] = $user['id'] . ',' . $groupid;
+					}
+					
+					$this->setJoomlaUserGroups($user['id'], $groups);
 				}
-
-				unset($requestData['usergroupselector']);
-				$input->set('jform', $requestData, 'array');
 			}
 		}
 	}
@@ -113,5 +112,22 @@ class plgUserUsergroupselector extends JPlugin
 		$db->setQuery($query);
 		return $db->loadObjectList('id');
 	}
+	
+	public function setJoomlaUserGroups($userid, $groups)
+	{
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true)
+    	    ->delete('#__user_usergroup_map')
+    	    ->where('user_id' . ' = ' . $userid);
+	    
+	    $db->setQuery($query);
+	    $db->execute();
+	    
+	    $query->clear()
+    	    ->insert('#__user_usergroup_map')
+    	    ->columns('`user_id`, `group_id`')
+    	    ->values($groups);
+	    $db->setQuery($query);
+	    $db->query();
+	}
 }
-
